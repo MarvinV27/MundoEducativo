@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "168654419049",
+    "project_id": "mundoeducativo-cf9c8",
+    "storage_bucket": "mundoeducativo-cf9c8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:168654419049:android:9786c705d055df1be75ef8",
+        "android_client_info": {
+          "package_name": "com.mundoeducativo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTeULBCT_pj0jgBDaRUZ4JiQ8IQfmV4Tk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

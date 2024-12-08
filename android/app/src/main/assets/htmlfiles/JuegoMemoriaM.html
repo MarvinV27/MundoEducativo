@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Juego de Memoria</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 90vh;
+      background-color: #BFE0F3;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container h1 {
+      background-color: #ffffff;
+      color: rgb(4, 0, 255);
+      padding: 10px;
+      border-radius: 40px;
+      font-family: 'Poppins', sans-serif; /* Aplicar la fuente Poppins-Bold */
+      font-weight: 700; /* Asegurarse de que sea Bold */
+    }
+    .memory-game-container {
+      background: linear-gradient(to bottom, #89A3FF, #253367); /* Degradado de fondo hacia abajo */
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px; /* Espacio entre el div y el botón */
+    }
+    .memory-game {
+      display: grid;
+      grid-template-columns: repeat(2, 150px); /* Cambiado a 2 columnas */
+      grid-gap: 10px;
+    }
+    .memory-card {
+      width: 150px;
+      height: 150px;
+      background-color: #f4f4f4;
+      position: relative;
+      cursor: pointer;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform: perspective(600px) rotateY(0deg);
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+    }
+    .memory-card.flip {
+      transform: perspective(600px) rotateY(180deg);
+    }
+    .memory-card.error {
+      background-color: red;
+    }
+    .memory-card .front,
+    .memory-card .back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 10px;
+    }
+    .memory-card .front {
+      background-color: #f4f4f4;
+      color: black; 
+      font-size: 100px;
+      visibility: visible; /* Asegurarse de que sea visible por defecto */
+    }
+    .memory-card.flip .front {
+      visibility: hidden; /* Ocultar cuando la carta está volteada */
+    }
+    .memory-card .back {
+      transform: rotateY(180deg);
+    }
+    .memory-card img {
+      width: 80px;
+      height: 80px;
+    }
+    .memory-card.matched .back {
+      background-color: #11b327;
+    }
+    .button-container {
+      margin-bottom: 10px;
+      margin-top: 20px;
+      margin-left: 95px;
+    }
+    .button {
+      padding: 10px 20px;
+      background: linear-gradient(to left, #ebd15d, #e9a86b);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .button:hover {
+      background-color: #0056b3;
+    }
+    .score {
+      margin-top: 10px;
+      font-size: 18px;
+    }
+    .alert {
+      display: none;
+      padding: 20px;
+      margin-top: 20px;
+      background-color: #57C1E6;
+      color: white;
+      border-radius: 5px;
+      position: absolute;
+      top: 300px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Juego de Memoria</h1>
+  <div class="memory-game-container">
+    <div class="memory-game" id="memoryGame">
+      <!-- Tarjetas del juego (6 tarjetas = 3 pares) -->
+      <div class="memory-card" data-framework="nariz">
+        <div class="front">?</div>
+        <div class="back">
+          <img src="imgs/unoo.png" alt="Nariz">
+        </div>
+      </div>
+      <div class="memory-card" data-framework="nariz">
+        <div class="front">?</div>
+        <div class="back">
+          <img src="imgs/unoo.png" alt="Nariz">
+        </div>
+      </div>
+      <div class="memory-card" data-framework="oido">
+        <div class="front">?</div>
+        <div class="back">
+          <img src="imgs/trees.png" alt="Oido">
+        </div>
+      </div>
+      <div class="memory-card" data-framework="oido">
+        <div class="front">?</div>
+        <div class="back">
+          <img src="imgs/trees.png" alt="Oido">
+        </div>
+      </div>
+      <div class="memory-card" data-framework="ojo">
+        <div class="front">?</div>
+        <div class="back">
+          <img src="imgs/doos.png" alt="Ojo">
+        </div>
+      </div>
+      <div class="memory-card" data-framework="ojo">
+        <div class="front">?</div>
+        <div class="back">
+          <img src="imgs/doos.png" alt="Ojo">
+        </div>
+      </div>
+    </div>
+
+    <div class="button-container">
+      <button class="button" onclick="startGame()">Comenzar Juego</button>
+    </div>
+    
+  </div>
+
+  
+</div>
+
+<div class="score" id="score">Parejas encontradas: 0</div>
+
+<!-- Div para mostrar alertas -->
+<div class="alert" id="alert">¡Bien hecho! Has completado el juego.</div>
+
+<script>
+  const cards = document.querySelectorAll('.memory-card');
+  let hasFlippedCard = false;
+  let firstCard, secondCard;
+  let matchedPairs = 0;
+  let totalPairs = cards.length / 2; // Total de pares
+  let isPreview = true;
+  let lockBoard = false; // Para evitar múltiples clics
+
+  function shuffle() {
+    cards.forEach(card => {
+      let randomPos = Math.floor(Math.random() * cards.length);
+      card.style.order = randomPos;
+    });
+  }
+
+  function startGame() {
+    shuffle(); // Mezcla las tarjetas
+    matchedPairs = 0;
+    document.getElementById('score').textContent = 'Parejas encontradas: 0';
+    isPreview = true;
+    lockBoard = true;
+    // Restablecer todas las tarjetas
+    cards.forEach(card => {
+      card.classList.remove('flip', 'matched', 'error');
+    });
+    // Mostrar las cartas por 2 segundos
+    cards.forEach(card => {
+      card.classList.add('flip');
+    });
+    setTimeout(() => {
+      cards.forEach(card => {
+        card.classList.remove('flip');
+      });
+      isPreview = false;
+      lockBoard = false;
+    }, 2000);
+    enableCardClick();
+  }
+
+  function enableCardClick() {
+    cards.forEach(card => card.addEventListener('click', flipCard));
+  }
+
+  function flipCard() {
+    if (isPreview || lockBoard || this === firstCard) return;
+
+    this.classList.add('flip');
+
+    if (!hasFlippedCard) {
+      hasFlippedCard = true;
+      firstCard = this;
+    } else {
+      hasFlippedCard = false;
+      secondCard = this;
+      checkForMatch();
+    }
+  }
+
+  function checkForMatch() {
+    lockBoard = true;
+    if (firstCard.dataset.framework === secondCard.dataset.framework) {
+      disableCards();
+      matchedPairs++;
+      document.getElementById('score').textContent = `Parejas encontradas: ${matchedPairs}`;
+      checkForCompletion(); // Verificar si se completó el juego
+    } else {
+      showError();
+    }
+  }
+
+  function disableCards() {
+    firstCard.classList.add('matched');
+    secondCard.classList.add('matched');
+    firstCard.removeEventListener('click', flipCard);
+    secondCard.removeEventListener('click', flipCard);
+    resetBoard();
+  }
+
+  function showError() {
+    firstCard.classList.add('error');
+    secondCard.classList.add('error');
+    setTimeout(() => {
+      firstCard.classList.remove('flip', 'error');
+      secondCard.classList.remove('flip', 'error');
+      resetBoard();
+    }, 1000);
+  }
+
+  function resetBoard() {
+    [hasFlippedCard, lockBoard] = [false, false];
+    [firstCard, secondCard] = [null, null];
+  }
+
+  function checkForCompletion() {
+    if (matchedPairs === totalPairs) {
+      const alertDiv = document.getElementById('alert');
+      alertDiv.style.display = 'block'; // Mostrar la alerta personalizada
+      setTimeout(() => {
+        alertDiv.style.display = 'none'; // Ocultar la alerta después de 2 segundos
+      }, 2000);
+    }
+  }
+</script>
+
+</body>
+</html>
