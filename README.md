@@ -5,12 +5,14 @@ Mundo Educativo es una aplicación educativa diseñada especialmente para ayudar
 Proporcionar una plataforma interactiva, animada y divertida para que los niños de primer grado puedan reforzar sus conocimientos en diversas materias.
 Ofrecer actividades y juegos educativos que estimulen la curiosidad y el aprendizaje activo de los niños.
 Fomentar el uso adecuado de la tecnología y promover la alfabetización digital entre los niños.
+
  CARACTERÍSTICAS DEL PROYECTO
 Materiales educativos: Lecciones, videos e infografías. 
 Seguimiento del progreso: Registro del rendimiento de los estudiantes en las actividades.
 Interfaz intuitiva: Botones atractivos, tipografía amigable y un diseño optimizado.
 Voz guía: Para asistir a los usuarios en cada sección de la aplicación.
 Actividades interactivas: Juegos y actividades para reforzar el aprendizaje.
+
 TECNOLOGÍAS UTILIZADAS
 React Native y Librerías relacionadas: Usamos React Native para desarrollar MUNDO EDUCATIVO el cual nos permite usar código en JavaScript y renderizar interfaces nativas de manera rápida.
 React-Native-Sound: Esta librería se utiliza para gestionar y producir sonidos dentro de la aplicación.
